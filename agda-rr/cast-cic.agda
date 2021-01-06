@@ -7,7 +7,6 @@ open import Agda.Builtin.List
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
-open import Agda.Builtin.Unit
 open import Data.Vec.Base
 open import Data.Bool
 open import Data.Sum
@@ -89,10 +88,10 @@ postulate cast-Bool-unk : cast Bool Bool (unk Bool) ≡ unk Bool
 
 {-# REWRITE cast-Bool-true cast-Bool-false cast-Bool-raise cast-Bool-unk #-}
 
-postulate cast-Unit : cast ⊤ ⊤ tt ≡ tt
-{- Beware that raise ⊤ ≡ tt ≡ unk ⊤ because of definitional singleton -}
-postulate cast-Unit-raise : cast ⊤ ⊤ (raise ⊤) ≡ raise ⊤
-postulate cast-Unit-unk : cast ⊤ ⊤ (unk ⊤) ≡ unk ⊤
+postulate cast-Unit : cast Unit Unit tt ≡ tt
+{- Beware that raise Unit ≡ tt ≡ unk Unit because of definitional singleton -}
+postulate cast-Unit-raise : cast Unit Unit (raise Unit) ≡ raise Unit
+postulate cast-Unit-unk : cast Unit Unit (unk Unit) ≡ unk Unit
 
 {-# REWRITE cast-Unit cast-Unit-raise cast-Unit-unk #-}
 
@@ -152,10 +151,31 @@ postulate cast-Sigma-Unk : (A : Set ℓ) (B : A → Set ℓ₁) (x : Σ {a = ℓ
 
 {-# REWRITE cast-Sigma-Unk #-}
 
-
 delta : Unk ℓ → Unk ℓ
 delta {ℓ} x = cast (Unk ℓ) (Unk ℓ → Unk ℓ) x x
 
 omega : Unk ℓ
 omega {ℓ} = delta {ℓ = ℓ} (cast (Unk ℓ → Unk ℓ) (Unk ℓ) (delta {ℓ = ℓ}))
 
+retr : (A : Set ℓ) (a : A) → A
+retr {ℓ} A a = cast (Unk (lsuc ℓ)) A (cast A (Unk (lsuc ℓ)) a)
+
+
+postulate cast-Nat-Unk : (n : Nat) → cast Nat (Unk (lsuc lzero)) n ≡ unk-cast Nat n
+
+{-# REWRITE cast-Nat-Unk #-}
+
+retr-0 : retr {lzero} Nat 0 ≡ 0
+retr-0 = refl
+
+retr-arr : (A : Set ℓ) (a : A) → A
+retr-arr {ℓ} A = retr {lsuc ℓ} (A → A) (λ a → a)
+
+{-
+retr-arr-0 : retr-arr Nat 0 ≡ 0
+retr-arr-0 = refl -- fails
+-- cast (Unk (lsuc (lsuc lzero))) (Nat → Nat)
+-- (cast (Nat → Nat) (Unk (lsuc (lsuc lzero))) (λ a → a)) 0
+-- != zero of type Nat
+-- when checking that the expression refl has type retr-arr Nat 0 ≡ 0
+-}

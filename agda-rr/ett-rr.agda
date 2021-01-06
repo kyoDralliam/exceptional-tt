@@ -7,15 +7,17 @@ open import Agda.Builtin.List
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
-open import Agda.Builtin.Unit
 open import Data.Vec.Base
 open import Data.Bool
 open import Data.Sum
 
 variable ℓ ℓ₁ ℓ₂ ℓ₃ ℓ₄ : Level
 
-record Top ℓ : Set ℓ where
+record ⊤ ℓ : Set ℓ where
   constructor ⟨⟩
+
+data Unit {ℓ} : Set ℓ where
+  tt : Unit
 
 
 {- 
@@ -62,11 +64,11 @@ postulate catch-nat-raise : (P : Nat → Set ℓ) (P0 : P 0) (PS : (n : Nat) →
 {-# REWRITE catch-nat-suc #-}
 {-# REWRITE catch-nat-raise #-}
 
-postulate raise-Top : raise (Top ℓ) ≡ ⟨⟩
+postulate raise-Top : raise (⊤ ℓ) ≡ ⟨⟩
 
 {-# REWRITE raise-Top #-}
 
-postulate raise-Set : raise (Set ℓ) ≡ Top ℓ
+postulate raise-Set : raise (Set ℓ) ≡ ⊤ ℓ
 
 {-# REWRITE raise-Set #-}
 
@@ -113,7 +115,7 @@ postulate catch-unk-nat-unk : (P : Nat → Set ℓ) (P0 : P 0) (PS : (n : Nat) �
 {-# REWRITE catch-unk-nat-suc #-}
 {-# REWRITE catch-unk-nat-unk #-}
 
-postulate unk-Top : unk (Top ℓ) ≡ ⟨⟩
+postulate unk-Top : unk (⊤ ℓ) ≡ ⟨⟩
 
 {-# REWRITE unk-Top #-}
 
